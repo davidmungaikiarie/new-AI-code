@@ -1,0 +1,49 @@
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, classification_report
+
+# Sample dataset (replace with an actual dataset if available)
+data = {
+    "message": [
+        "Win a free iPhone now!",
+        "Hey, are we meeting tomorrow?",
+        "You have been selected for a prize, claim now.",
+        "Let's grab lunch today.",
+        "Exclusive offer! Buy one get one free!",
+        "Your subscription is expiring soon.",
+    ],
+    "label": ["spam", "ham", "spam", "ham", "spam", "ham"]
+}
+
+# Create a DataFrame
+df = pd.DataFrame(data)
+
+# Split data into features and labels
+X = df['message']
+y = df['label']
+
+# Convert text to feature vectors using CountVectorizer
+vectorizer = CountVectorizer()
+X_vectors = vectorizer.fit_transform(X)
+
+# Split into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X_vectors, y, test_size=0.3, random_state=42)
+
+# Train a Naive Bayes classifier
+model = MultinomialNB()
+model.fit(X_train, y_train)
+
+# Predict on test set
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Classification Report:\n", classification_report(y_test, y_pred))
+
+# Test the model with a new message
+new_message = ["Get rich quick! Click here now!"]
+new_message_vector = vectorizer.transform(new_message)
+prediction = model.predict(new_message_vector)
+print(f"New message prediction: {prediction[0]}")
